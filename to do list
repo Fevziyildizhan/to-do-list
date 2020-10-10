@@ -1,0 +1,203 @@
+
+    <div class="container p-3">
+        <h1 class="app-title" id="header">to do App</h1>
+        <div class="card">
+            <div class="card-header">
+                New Task
+            </div>
+            <div class="card-body">
+                <form id="addTaskForm">
+                    <div class="input-group mt-3"> 
+                        <input id="txtTaskName" name="taskName" type="text" class="form-control" placeholder="Type a new task" aria-describedby="btnAddNewTask">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit" id="btnAddNewTask">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div> 
+                    </form>
+                </div>    
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    Task List
+                    <a id="btnDeleteAll" href="#" class="btn btn-outline-danger btn-sm delete-all float-right">
+                        Delete All
+                    </a>
+                </div>
+                <ul id="task-list" class="list-group">
+                </ul>
+            </div>
+    
+        </div> 
+       
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <script src="todo list .js" ></script>
+        <link rel="stylesheet" href="todo list .css">
+        
+        
+        // JS
+        // UI varsa
+
+const form = document.querySelector('form')
+const input = document.querySelector('#txtTaskName')
+const deleteAll = document.querySelector('#btnDeleteAll')
+const tasklist = document.querySelector('#task-list')
+let itmes;
+
+
+// load items
+loaditems()
+
+
+// call event listeners
+eventListeners();
+
+
+
+function eventListeners(){
+
+     // submit event
+    form.addEventListener('submit',addnewItem);
+
+    // delete an item
+  tasklist.addEventListener('click',deleteItem);
+
+  // delete all items
+  deleteAll.addEventListener('click',deleteAllitems);
+
+
+}
+
+function loaditems(){
+
+    items = getItemsFromLS()
+       items.forEach(function(item){
+       creatItem(item)
+       })
+}
+// get items from LS
+function getItemsFromLS(){
+      if(localStorage.getItem('items')=== null){
+
+      items = []
+
+      }else{
+        items = JSON.parse(localStorage.getItem('items'))
+    }
+    return items
+}
+
+// set item to LS
+function setItemToLS(text){
+    items = getItemsFromLS()
+    items.push(text)
+    localStorage.setItem('items',JSON.stringify(items))
+}
+
+// delete item from LS
+ function  deleteItemFromLS(text){
+      items = getItemsFromLS();
+      items.forEach(function(item,index){
+          if(item === text){
+            items.splice(index,1)
+          }
+     
+      })
+      localStorage.setItem('items',JSON.stringify(items));
+ }
+
+
+ function creatItem(text){
+    const li = document.createElement('li');
+    li.className = 'list-group-item list-group-item-secondry'
+   li.appendChild(document.createTextNode(text)); //input.value
+  
+    // creat a
+    const a = document.createElement('a');
+     a.classList = 'delete-item float-right'
+     a.setAttribute('href','#');
+     a.innerHTML = '<i class ="fas fa-times"></i>'
+  
+        
+     // add a to li 
+     li.appendChild(a);
+  
+  
+     // add a to ul
+   tasklist.appendChild(li);
+ }
+
+// add new item
+function addnewItem(e){
+       
+   if(input.value === ' '){
+       alert('add new item');
+   }
+   // creat li
+  /*const li = document.createElement('li');
+  li.className = 'list-group-item list-group-item-secondry'
+ li.appendChild(document.createTextNode(input.value));
+
+  // creat a
+  const a = document.createElement('a');
+   a.classList = 'delete-item float-right'
+   a.setAttribute('href','#');
+   a.innerHTML = '<i class ="fas fa-times"></i>'
+
+      
+   // add a to li 
+   li.appendChild(a);
+
+
+   // add a to ul
+ tasklist.appendChild(li);*/
+  
+    //creat item
+    creatItem(input.value)
+
+    // save to LS
+    setItemToLS(input.value)
+
+   // clear input
+   input.value = ''
+
+    e.preventDefault();;
+
+}
+
+// delete an item
+function deleteItem(e){
+    if(e.target.className === 'fas fa-times'){
+        
+          e.target.parentElement.parentElement.remove();
+
+          // delete item from LS
+          deleteItemFromLS(e.target.parentElement.textContent)
+
+    }
+    e.preventDefault();
+}
+
+// delete all items
+function deleteAllitems(e){
+ //tasklist.innerHTML = ''
+while(tasklist.firstChild){
+    tasklist.removeChild(tasklist.firstChild)
+}
+localStorage.clear()
+e.preventDefault()
+/* 
+if(confirm('emin misiniz')){
+tasklist.childNodes.forEach(function(item){
+    if(item.nodeType === 1){
+        item.remove();
+    }
+})
+localStorage.clear()
+//e.preventDefault()
+}*/
+e.preventDefault()
+}
